@@ -3,6 +3,7 @@ import useCatStore from "@/stores/catStore";
 import theCatAPI from "../config/catApi";
 import { Category } from "../models/category";
 import { Cat } from "../models/cat";
+import { getRandomNumber } from "../helpers/utils";
 
 export default function CatListPage() {
   const { cats, category, categories, setCats, setCategory, setCategories } =
@@ -16,7 +17,6 @@ export default function CatListPage() {
   useEffect(() => {
     const fetchCats = async () => {
       try {
-        console.log(`category: ${JSON.stringify(category)}`);
         const baseUrl = "/images/search?limit=20";
 
         const categoryId = category?.current ? category.current?.id : null;
@@ -27,10 +27,8 @@ export default function CatListPage() {
         const newCats = response.data;
 
         if (category?.current?.id !== category?.previous?.id) {
-          console.log(`nova categoria: ${JSON.stringify(newCats)}`);
           setCats(newCats);
         } else {
-          console.log(`mesma categoria: ${JSON.stringify([...cats, ...newCats])}`);
           setCats([...cats, ...newCats]);
         }
       } catch (error) {
@@ -106,7 +104,7 @@ export default function CatListPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full">
         {cats.map((cat) => (
           <div
-            key={cat.id}
+            key={getRandomNumber().toString()}
             onClick={() => console.log(`Selected cat ID: ${cat.id}`)}
             className="border border-black rounded-lg cursor-pointer w-[209px] h-[240px] overflow-hidden"
           >
