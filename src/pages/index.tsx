@@ -1,21 +1,62 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import useCatStore from "@/stores/catStore";
+import theCatAPI from "../config/catApi";
+import { Category } from "../models/category";
+import { Cat } from "../models/cat";
 
 export default function CatListPage() {
-  const { cats, loadCats, category, categories, fetchCategories } =
+  const { cats, category, categories, setCats, setCategory, setCategories } =
     useCatStore();
 
+  const categoryRef = useRef(category);
   useEffect(() => {
-    loadCats();
-  }, [loadCats]);
+    categoryRef.current = category;
+  }, [category]);
 
-  const handleScroll = () => {
-    const bottom =
-      window.innerHeight + window.scrollY >= document.body.offsetHeight;
-    if (bottom) {
-      loadCats();
-    }
-  };
+  useEffect(() => {
+    const fetchCats = async () => {
+      try {
+        console.log(`category: ${JSON.stringify(category)}`);
+        const baseUrl = "/images/search?limit=20";
+
+        const categoryId = category?.current ? category.current?.id : null;
+
+        const response = await theCatAPI.get<Cat[]>(
+          `${baseUrl}${categoryId ? `&category_ids=${categoryId}` : ""}`
+        );
+        const newCats = response.data;
+
+        if (category?.current?.id !== category?.previous?.id) {
+          console.log(`nova categoria: ${JSON.stringify(newCats)}`);
+          setCats(newCats);
+        } else {
+          console.log(`mesma categoria: ${JSON.stringify([...cats, ...newCats])}`);
+          setCats([...cats, ...newCats]);
+        }
+      } catch (error) {
+        console.error("Failed to load cats:", error);
+      }
+    };
+
+    fetchCats();
+  }, [category]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const url = "/categories";
+
+      try {
+        const response = await theCatAPI.get<Category[]>(url);
+        const categories = response.data;
+
+        setCategories(categories);
+      } catch (error) {
+        console.error("Failed to fetch categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
@@ -24,9 +65,13 @@ export default function CatListPage() {
     };
   }, []);
 
-  useEffect(() => {
-    fetchCategories();
-  }, [fetchCategories]);
+  const handleScroll = async () => {
+    const bottom =
+      window.innerHeight + window.scrollY >= document.body.offsetHeight;
+    if (bottom) {
+      setCategory(categoryRef.current!.current!);
+    }
+  };
 
   return (
     <div className="flex flex-col items-start p-4 max-w-screen-lg mx-auto min-h-screen">
@@ -40,14 +85,14 @@ export default function CatListPage() {
             key={cat.id}
             className={`cursor-pointer rounded-full border-2 mr-2 mb-2 flex items-center justify-center h-[31px] px-4 border-black 
               ${
-                cat === category
+                cat === category?.current
                   ? "bg-black text-white"
                   : "bg-transparent text-black"
               } 
             `}
             onClick={() => {
-              if (!category || cat.id !== category.id) {
-                loadCats(cat);
+              if (!category || cat.id !== category.current?.id) {
+                setCategory(cat);
               }
             }}
           >
