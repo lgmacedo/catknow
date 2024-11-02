@@ -4,6 +4,7 @@ import theCatAPI from "../config/catApi";
 import { Category } from "../models/category";
 import { Cat } from "../models/cat";
 import { getRandomNumber } from "../helpers/utils";
+import Link from "next/link";
 
 export default function CatListPage() {
   const { cats, category, categories, setCats, setCategory, setCategories } =
@@ -22,7 +23,9 @@ export default function CatListPage() {
         const categoryId = category?.current ? category.current?.id : null;
 
         const response = await theCatAPI.get<Cat[]>(
-          `${baseUrl}${categoryId ? `&category_ids=${categoryId}` : ""}`
+          `${baseUrl}${
+            categoryId ? `&category_ids=${categoryId}` : "&has_breeds=1"
+          }`
         );
         const newCats = response.data;
 
@@ -64,16 +67,16 @@ export default function CatListPage() {
   }, []);
 
   const handleScroll = async () => {
-    const bottom =
-      window.innerHeight + window.scrollY >= document.body.offsetHeight;
-    if (bottom) {
+    const nearBottom =
+      window.innerHeight + window.scrollY >= document.body.offsetHeight - 500;
+    if (nearBottom) {
       setCategory(categoryRef.current!.current!);
     }
   };
 
   return (
     <div className="flex flex-col items-start p-4 max-w-screen-lg mx-auto min-h-screen">
-      <h1 className="text-4xl font-bold mb-6 text-black w-full text-center">
+      <h1 className="text-6xl font-bold mb-6 text-black w-full text-center">
         CATKNOW
       </h1>
 
@@ -103,20 +106,20 @@ export default function CatListPage() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full">
         {cats.map((cat) => (
-          <div
-            key={getRandomNumber().toString()}
-            onClick={() => console.log(`Selected cat ID: ${cat.id}`)}
-            className="border border-black rounded-lg cursor-pointer w-[209px] h-[240px] overflow-hidden"
-          >
-            <img
-              src={cat.url}
-              alt="Cat"
-              className="w-full h-[209px] object-cover"
-            />
-            <p className="flex items-center justify-center h-[31px] text-center text-black font-inter font-bold text-[12px]">
-              {cat.id}
-            </p>
-          </div>
+          <Link href={`/cat/${cat.id}`} key={getRandomNumber().toString()}>
+            <div className="border border-black rounded-lg cursor-pointer w-[209px] h-[240px] overflow-hidden">
+              <img
+                src={cat.url}
+                alt="Cat"
+                className="w-full h-[209px] object-cover"
+              />
+              <p className="flex items-center justify-center h-[31px] text-center text-black font-inter font-bold text-[12px]">
+                {cat.breeds && cat.breeds.length > 0
+                  ? cat.breeds[0].name
+                  : cat.id}
+              </p>
+            </div>
+          </Link>
         ))}
       </div>
     </div>
