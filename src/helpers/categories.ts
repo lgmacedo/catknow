@@ -9,23 +9,23 @@ declare enum Category {
 }
 
 export function getCategoryFromString(category: string): Category | undefined {
-  const categoryName = category.toUpperCase();
+  const categoryName = category.toUpperCase()
   switch (categoryName) {
     case "HATS":
-      return Category.HATS;
+      return Category.HATS
     case "SPACE":
-      return Category.SPACE;
+      return Category.SPACE
     case "SUNGLASSES":
-      return Category.SUNGLASSES;
+      return Category.SUNGLASSES
     case "BOXES":
-      return Category.BOXES;
+      return Category.BOXES
     case "TIES":
-      return Category.TIES;
+      return Category.TIES
     case "SINKS":
-      return Category.SINKS;
+      return Category.SINKS
     case "CLOTHES":
-      return Category.CLOTHES;
+      return Category.CLOTHES
     default:
-      return undefined;
+      return undefined
   }
 }

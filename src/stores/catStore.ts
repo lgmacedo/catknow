@@ -1,15 +1,15 @@
-import { create } from "zustand";
-import { Category } from "../models/category";
-import { Cat } from "../models/cat";
+import { create } from "zustand"
+import { Category } from "../models/category"
+import { Cat } from "../models/cat"
 
 interface CatStore {
-  cats: Cat[];
-  category?: { previous: Category | undefined; current: Category | undefined };
-  categories: Category[];
+  cats: Cat[]
+  category?: { previous: Category | undefined; current: Category | undefined }
+  categories: Category[]
 
-  setCats: (fetchedCats: Cat[]) => void;
-  setCategory: (category: Category) => void;
-  setCategories: (fetchedCategories: Category[]) => void;
+  setCats: (fetchedCats: Cat[]) => void
+  setCategory: (category: Category) => void
+  setCategories: (fetchedCategories: Category[]) => void
 }
 
 const useCatStore = create<CatStore>((set, get) => ({
@@ -18,7 +18,7 @@ const useCatStore = create<CatStore>((set, get) => ({
   categories: [],
 
   setCats: (fetchedCats: Cat[]) => {
-    set({ cats: fetchedCats });
+    set({ cats: fetchedCats })
   },
 
   setCategory: (selectedCategory: Category) => {
@@ -27,12 +27,12 @@ const useCatStore = create<CatStore>((set, get) => ({
         previous: get().category?.current,
         current: selectedCategory,
       },
-    });
+    })
   },
 
   setCategories: (fetchedCategories: Category[]) => {
-    set({ categories: fetchedCategories });
+    set({ categories: fetchedCategories })
   },
-}));
+}))
 
-export default useCatStore;
+export default useCatStore

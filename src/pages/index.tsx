@@ -1,78 +1,78 @@
-import { useEffect, useRef } from "react";
-import useCatStore from "@/stores/catStore";
-import theCatAPI from "../config/catApi";
-import { Category } from "../models/category";
-import { Cat } from "../models/cat";
-import { getRandomNumber } from "../helpers/utils";
-import Link from "next/link";
+import { useEffect, useRef } from "react"
+import useCatStore from "@/stores/catStore"
+import theCatAPI from "../config/catApi"
+import { Category } from "../models/category"
+import { Cat } from "../models/cat"
+import { getRandomNumber } from "../helpers/utils"
+import Link from "next/link"
 
 export default function CatListPage() {
   const { cats, category, categories, setCats, setCategory, setCategories } =
-    useCatStore();
+    useCatStore()
 
-  const categoryRef = useRef(category);
+  const categoryRef = useRef(category)
   useEffect(() => {
-    categoryRef.current = category;
-  }, [category]);
+    categoryRef.current = category
+  }, [category])
 
   useEffect(() => {
     const fetchCats = async () => {
       try {
-        const baseUrl = "/images/search?limit=20";
+        const baseUrl = "/images/search?limit=20"
 
-        const categoryId = category?.current ? category.current?.id : null;
+        const categoryId = category?.current ? category.current?.id : null
 
         const response = await theCatAPI.get<Cat[]>(
           `${baseUrl}${
             categoryId ? `&category_ids=${categoryId}` : "&has_breeds=1"
-          }`
-        );
-        const newCats = response.data;
+          }`,
+        )
+        const newCats = response.data
 
         if (category?.current?.id !== category?.previous?.id) {
-          setCats(newCats);
+          setCats(newCats)
         } else {
-          setCats([...cats, ...newCats]);
+          setCats([...cats, ...newCats])
         }
       } catch (error) {
-        console.error("Failed to load cats:", error);
+        console.error("Failed to load cats:", error)
       }
-    };
+    }
 
-    fetchCats();
-  }, [category]);
+    fetchCats()
+  }, [category])
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const url = "/categories";
+      const url = "/categories"
 
       try {
-        const response = await theCatAPI.get<Category[]>(url);
-        const categories = response.data;
+        const response = await theCatAPI.get<Category[]>(url)
+        const categories = response.data
 
-        setCategories(categories);
+        setCategories(categories)
       } catch (error) {
-        console.error("Failed to fetch categories:", error);
+        console.error("Failed to fetch categories:", error)
       }
-    };
+    }
 
-    fetchCategories();
-  }, []);
+    fetchCategories()
+  }, [])
 
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll)
     return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
+      window.removeEventListener("scroll", handleScroll)
+    }
+  }, [])
 
   const handleScroll = async () => {
     const nearBottom =
-      window.innerHeight + window.scrollY >= document.body.offsetHeight - 500;
+      window.innerHeight + window.scrollY >= document.body.offsetHeight - 500
     if (nearBottom) {
-      setCategory(categoryRef.current!.current!);
+      setCategory(categoryRef.current!.current!)
     }
-  };
+  }
 
   return (
     <div className="flex flex-col items-start p-4 max-w-screen-lg mx-auto min-h-screen">
@@ -93,7 +93,7 @@ export default function CatListPage() {
       `}
             onClick={() => {
               if (!category || cat.id !== category.current?.id) {
-                setCategory(cat);
+                setCategory(cat)
               }
             }}
           >
@@ -123,5 +123,5 @@ export default function CatListPage() {
         ))}
       </div>
     </div>
-  );
+  )
 }

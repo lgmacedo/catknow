@@ -1,31 +1,31 @@
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import theCatAPI from "@/config/catApi";
-import { Cat } from "../../models/cat";
-import Link from "next/link";
+import { useRouter } from "next/router"
+import { useEffect, useState } from "react"
+import theCatAPI from "@/config/catApi"
+import { Cat } from "../../models/cat"
+import Link from "next/link"
 
 export default function CatDetailPage() {
-  const router = useRouter();
-  const { id } = router.query;
-  const [cat, setCat] = useState<Cat | undefined>(undefined);
+  const router = useRouter()
+  const { id } = router.query
+  const [cat, setCat] = useState<Cat | undefined>(undefined)
 
   useEffect(() => {
     const fetchCat = async () => {
-      if (!id) return;
+      if (!id) return
 
-      const baseUrl = `/images/${id}`;
+      const baseUrl = `/images/${id}`
 
       try {
-        const response = await theCatAPI.get<Cat>(baseUrl);
-        const cat = response.data;
-        setCat(cat);
+        const response = await theCatAPI.get<Cat>(baseUrl)
+        const cat = response.data
+        setCat(cat)
       } catch (error) {
-        console.error("Failed to fetch cat:", error);
+        console.error("Failed to fetch cat:", error)
       }
-    };
+    }
 
-    fetchCat();
-  }, [id]);
+    fetchCat()
+  }, [id])
 
   return (
     <div className="flex flex-col items-center p-6 max-w-screen-lg mx-auto min-h-screen">
@@ -80,5 +80,5 @@ export default function CatDetailPage() {
         </div>
       </div>
     </div>
-  );
+  )
 }
