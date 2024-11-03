@@ -30,14 +30,14 @@ export default function CatDetailPage() {
   return (
     <div className="flex flex-col items-center p-6 max-w-screen-lg mx-auto min-h-screen">
       <Link href={"/"}>
-        <h1 className="text-6xl font-bold mb-8 text-center font-inter">
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 text-center font-inter">
           CATKNOW
         </h1>
       </Link>
 
       <div className="flex flex-col sm:flex-row items-center sm:items-start gap-8 w-full">
-        <div className="w-[431px] h-[386px] flex flex-col items-center border border-black rounded-[16px]">
-          <div className="rounded-t-[16px] overflow-hidden w-[431px] h-[355px] relative">
+        <div className="w-[253px] sm:w-[431px] h-[227px] sm:h-[386px] flex flex-col items-center border border-black rounded-[16px]">
+          <div className="rounded-t-[16px] overflow-hidden w-[253px] sm:w-[431px] h-[208px] sm:h-[431px] relative">
             <img
               src={cat?.url}
               alt="Cat"
