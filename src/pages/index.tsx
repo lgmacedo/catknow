@@ -1,19 +1,15 @@
 import { useCallback, useEffect, useRef } from "react"
 import useCatStore from "@/stores/catStore"
-import theCatAPI from "../config/catApi"
 import { Category } from "../models/category"
 import { Cat } from "../models/cat"
 import { getRandomNumber } from "../helpers/utils"
 import Link from "next/link"
+import { listCategories, listCats } from "../services/catListService"
 
 export async function getServerSideProps() {
   try {
-    const baseUrl = "/images/search?limit=20&has_breeds=1"
-    const catResponse = await theCatAPI.get<Cat[]>(baseUrl)
-    const cats = catResponse.data
-
-    const categoryResponse = await theCatAPI.get<Category[]>("/categories")
-    const categories = categoryResponse.data
+    const cats = await listCats("/images/search?limit=20&has_breeds=1")
+    const categories = await listCategories()
 
     return {
       props: {
@@ -67,12 +63,11 @@ export default function CatListPage({
 
       const categoryId = category?.current ? category.current?.id : null
 
-      const response = await theCatAPI.get<Cat[]>(
+      const newCats = await listCats(
         `${baseUrl}${
           categoryId ? `&category_ids=${categoryId}` : "&has_breeds=1"
         }`,
       )
-      const newCats = response.data
 
       if (category?.current?.id !== category?.previous?.id) {
         setCats(newCats)

@@ -1,13 +1,11 @@
 import { useRouter } from "next/router"
 import Link from "next/link"
-import theCatAPI from "@/config/catApi"
 import { Cat } from "../../models/cat"
+import { listCats } from "../../services/catListService"
+import { showCat } from "../../services/catShowService"
 
 export async function getStaticPaths() {
-  const response = await theCatAPI.get<Cat[]>(
-    "/images/search?limit=100&has_breeds=1",
-  )
-  const cats = response.data
+  const cats = await listCats("/images/search?limit=100&has_breeds=1")
 
   const paths = cats.map((cat) => ({
     params: { id: cat.id },
@@ -18,11 +16,9 @@ export async function getStaticPaths() {
 
 export async function getStaticProps({ params }: { params: { id: string } }) {
   const { id } = params
-  const baseUrl = `/images/${id}`
 
   try {
-    const response = await theCatAPI.get<Cat>(baseUrl)
-    const cat = response.data
+    const cat = await showCat(id)
 
     return {
       props: {
