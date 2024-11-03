@@ -1,31 +1,53 @@
 import { useRouter } from "next/router"
-import { useEffect, useState } from "react"
+import Link from "next/link"
 import theCatAPI from "@/config/catApi"
 import { Cat } from "../../models/cat"
-import Link from "next/link"
 
-export default function CatDetailPage() {
-  const router = useRouter()
-  const { id } = router.query
-  const [cat, setCat] = useState<Cat | undefined>(undefined)
+export async function getStaticPaths() {
+  const response = await theCatAPI.get<Cat[]>(
+    "/images/search?limit=100&has_breeds=1",
+  )
+  const cats = response.data
 
-  useEffect(() => {
-    const fetchCat = async () => {
-      if (!id) return
+  const paths = cats.map((cat) => ({
+    params: { id: cat.id },
+  }))
 
-      const baseUrl = `/images/${id}`
+  return { paths, fallback: "blocking" }
+}
 
-      try {
-        const response = await theCatAPI.get<Cat>(baseUrl)
-        const cat = response.data
-        setCat(cat)
-      } catch (error) {
-        console.error("Failed to fetch cat:", error)
-      }
+export async function getStaticProps({ params }: { params: { id: string } }) {
+  const { id } = params
+  const baseUrl = `/images/${id}`
+
+  try {
+    const response = await theCatAPI.get<Cat>(baseUrl)
+    const cat = response.data
+
+    return {
+      props: {
+        cat,
+      },
+      revalidate: 60,
     }
+  } catch (error) {
+    console.error("Failed to fetch cat:", error)
+    return {
+      notFound: true,
+    }
+  }
+}
 
-    fetchCat()
-  }, [id])
+interface CatDetailPageProps {
+  cat: Cat
+}
+
+export default function CatDetailPage({ cat }: CatDetailPageProps) {
+  const router = useRouter()
+
+  if (router.isFallback) {
+    return <div>Loading...</div>
+  }
 
   return (
     <div className="flex flex-col items-center p-6 max-w-screen-lg mx-auto min-h-screen">
