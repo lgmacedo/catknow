@@ -9,8 +9,10 @@ import Image from "next/image"
 
 export async function getServerSideProps() {
   try {
-    const cats = await listCats("/images/search?limit=20&has_breeds=1")
-    const categories = await listCategories()
+    const [cats, categories] = await Promise.all([
+      listCats("/images/search?limit=16&has_breeds=1"),
+      listCategories(),
+    ])
 
     return {
       props: {
@@ -93,7 +95,7 @@ export default function CatListPage({
 
   const handleScroll = async () => {
     const nearBottom =
-      window.innerHeight + window.scrollY >= document.body.offsetHeight - 500
+      window.innerHeight + window.scrollY >= document.body.offsetHeight - 100
     if (nearBottom) {
       setCategory(categoryRef.current!.current!)
     }
