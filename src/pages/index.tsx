@@ -5,6 +5,7 @@ import { Cat } from "../models/cat"
 import { getRandomNumber } from "../helpers/utils"
 import Link from "next/link"
 import { listCategories, listCats } from "../services/catListService"
+import Image from "next/image"
 
 export async function getServerSideProps() {
   try {
@@ -131,13 +132,17 @@ export default function CatListPage({
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
         {cats.map((cat) => (
           <Link href={`/cat/${cat.id}`} key={getRandomNumber().toString()}>
-            <div className="border border-black rounded-lg cursor-pointer w-full h-[240px] overflow-hidden">
-              <img
-                src={cat.url}
-                alt="Cat"
-                className="w-full h-[209px] object-cover"
-              />
-              <p className="flex items-center justify-center h-[31px] text-center text-black font-inter font-bold text-[12px]">
+            <div className="border border-black rounded-lg cursor-pointer w-full h-[240px] flex flex-col overflow-hidden">
+              <div className="relative w-full h-[208px]">
+                <Image
+                  src={cat.url}
+                  alt="Cat"
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                />
+              </div>
+              <p className="flex items-center justify-center h-[32px] text-center text-black font-inter font-bold text-[12px]">
                 {cat.breeds && cat.breeds.length > 0
                   ? cat.breeds[0].name
                   : cat.id}

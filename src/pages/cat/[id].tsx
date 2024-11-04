@@ -3,6 +3,7 @@ import Link from "next/link"
 import { Cat } from "../../models/cat"
 import { listCats } from "../../services/catListService"
 import { showCat } from "../../services/catShowService"
+import Image from "next/image"
 
 export async function getStaticPaths() {
   const cats = await listCats("/images/search?limit=100&has_breeds=1")
@@ -56,10 +57,11 @@ export default function CatDetailPage({ cat }: CatDetailPageProps) {
       <div className="flex flex-col sm:flex-row items-center sm:items-start gap-8 w-full">
         <div className="w-[253px] sm:w-[431px] h-[227px] sm:h-[386px] flex flex-col items-center border border-black rounded-[16px]">
           <div className="rounded-t-[16px] overflow-hidden w-[253px] sm:w-[431px] h-[208px] sm:h-[431px] relative">
-            <img
+            <Image
               src={cat?.url}
               alt="Cat"
               className="w-full h-full object-cover"
+              fill={true}
             />
           </div>
           <p className="w-full text-center bg-white text-black font-inter font-bold text-[12px] py-2 rounded-b-[16px]">
