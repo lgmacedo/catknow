@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react"
+import { useEffect } from "react"
 import useCatStore from "@/stores/catStore"
 import { Category } from "../models/category"
 import { Cat } from "../models/cat"
@@ -10,7 +10,7 @@ import Image from "next/image"
 export async function getServerSideProps() {
   try {
     const [cats, categories] = await Promise.all([
-      listCats("/images/search?limit=16&has_breeds=1"),
+      listCats("/images/search?limit=20&has_breeds=1"),
       listCategories(),
     ])
 
@@ -31,60 +31,22 @@ export async function getServerSideProps() {
   }
 }
 
-interface CatListPageProps {
-  initialCats: Cat[]
+interface MainPageProps {
   initialCategories: Category[]
+  initialCats: Cat[]
 }
 
 export default function CatListPage({
   initialCats,
   initialCategories,
-}: CatListPageProps) {
-  const { cats, category, categories, setCats, setCategory, setCategories } =
+}: MainPageProps) {
+  const { cats, category, categories, getCats, setCats, setCategories } =
     useCatStore()
-
-  const isFirstRender = useRef(true)
-  const categoryRef = useRef(category)
 
   useEffect(() => {
     setCats(initialCats)
     setCategories(initialCategories)
-  }, [initialCats, initialCategories])
-
-  useEffect(() => {
-    categoryRef.current = category
-  }, [category])
-
-  const fetchCats = useCallback(async () => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false
-      return
-    }
-
-    try {
-      const baseUrl = "/images/search?limit=20"
-
-      const categoryId = category?.current ? category.current?.id : null
-
-      const newCats = await listCats(
-        `${baseUrl}${
-          categoryId ? `&category_ids=${categoryId}` : "&has_breeds=1"
-        }`,
-      )
-
-      if (category?.current?.id !== category?.previous?.id) {
-        setCats(newCats)
-      } else {
-        setCats([...cats, ...newCats])
-      }
-    } catch (error) {
-      console.error("Failed to load cats:", error)
-    }
-  }, [category])
-
-  useEffect(() => {
-    fetchCats()
-  }, [category])
+  }, [])
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll)
@@ -97,7 +59,7 @@ export default function CatListPage({
     const nearBottom =
       window.innerHeight + window.scrollY >= document.body.offsetHeight - 100
     if (nearBottom) {
-      setCategory(categoryRef.current!.current!)
+      getCats()
     }
   }
 
@@ -113,14 +75,14 @@ export default function CatListPage({
             key={cat.id}
             className={`cursor-pointer rounded-full border-2 mr-2 mb-2 flex items-center justify-center h-[24px] px-3 border-black 
         ${
-          cat === category?.current
+          cat.id === category?.id
             ? "bg-black text-white"
             : "bg-transparent text-black"
         } 
       `}
             onClick={() => {
-              if (!category || cat.id !== category.current?.id) {
-                setCategory(cat)
+              if (!category || cat.id !== category.id) {
+                getCats(cat)
               }
             }}
           >
