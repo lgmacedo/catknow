@@ -3,7 +3,6 @@ interface Breed {
   origin: string
   description: string
   life_span: string
-  [key: string]: unknown
 }
 
 export interface Cat {
